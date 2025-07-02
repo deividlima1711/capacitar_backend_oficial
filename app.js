@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
+// Trust the first proxy to get real client IP (needed for rate limiting)
+app.set('trust proxy', 1);
 
 // Middlewares de segurança
 app.use(helmet());
@@ -85,7 +87,9 @@ app.get('/', (req, res) => {
 });
 
 // Importar e usar rotas
-app.use('/auth', require('./src/routes/auth'));
+// As rotas de autenticacao foram montadas em '/api'
+// para que o endpoint de login funcione em POST /api/login
+app.use('/api', require('./src/routes/auth'));
 app.use('/api/processes', require('./src/routes/processes'));
 app.use('/api/tasks', require('./src/routes/tasks'));
 app.use('/api/users', require('./src/routes/users'));
