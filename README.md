@@ -66,10 +66,10 @@ O sistema cria automaticamente um usuário administrador:
 ## 📚 Endpoints da API
 
 ### Autenticação
-- `POST /auth/login` - Login do usuário
-- `GET /auth/verify` - Verificar token
-- `POST /auth/logout` - Logout
-- `PUT /auth/change-password` - Alterar senha
+- `POST /api/login` - Login do usuário
+- `GET /api/verify` - Verificar token
+- `POST /api/logout` - Logout
+- `PUT /api/change-password` - Alterar senha
 
 ### Usuários
 - `GET /api/users` - Listar usuários (admin/manager)
@@ -201,7 +201,7 @@ O sistema cria automaticamente um usuário administrador:
 
 ```bash
 # Testar endpoint de login
-curl -X POST http://localhost:5000/auth/login \
+curl -X POST http://localhost:5000/api/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"Lima12345"}'
 
