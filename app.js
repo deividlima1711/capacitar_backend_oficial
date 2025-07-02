@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
+
+// ✅ Precisa vir logo após o app ser criado para evitar erro do rate-limit
 app.set('trust proxy', 1);
 
 // Middlewares de segurança
@@ -18,11 +20,11 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100 // máximo 100 requests por IP
+  max: 100 // máximo de 100 requisições por IP
 });
 app.use(limiter);
 
-// Middlewares
+// Middlewares padrão
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,10 +38,10 @@ const connectDB = async () => {
     });
 
     console.log(`🔗 Conectado ao MongoDB: ${conn.connection.host}`);
-    
+
     // Criar usuário admin se não existir
     await createAdminUser();
-    
+
   } catch (error) {
     console.error('❌ Erro ao conectar MongoDB:', error.message);
     process.exit(1);
@@ -75,9 +77,9 @@ const createAdminUser = async () => {
   }
 };
 
-// Rota principal de verificação
+// Rota principal
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'ProcessFlow backend em execução',
     version: '1.0.0',
     status: 'online',
@@ -85,17 +87,17 @@ app.get('/', (req, res) => {
   });
 });
 
-// ✅ ROTAS IMPORTADAS — corrigido!
+// Rotas da API
 app.use('/api', require('./src/routes/auth'));
 app.use('/api/processes', require('./src/routes/processes'));
 app.use('/api/tasks', require('./src/routes/tasks'));
 app.use('/api/users', require('./src/routes/users'));
 app.use('/api/teams', require('./src/routes/teams'));
 
-// Middleware de erro global
+// Middleware global de erro
 app.use((err, req, res, next) => {
   console.error('❌ Erro:', err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Erro interno do servidor',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Algo deu errado'
   });
@@ -106,7 +108,7 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
 });
 
-// Iniciar servidor
+// Inicialização do servidor
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
