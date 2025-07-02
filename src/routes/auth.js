@@ -5,9 +5,6 @@ const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Todas as rotas deste arquivo serão acessadas com o prefixo '/api'
-// definido em app.js
-
 // Login
 router.post('/login', async (req, res) => {
   try {

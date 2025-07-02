@@ -85,8 +85,6 @@ app.get('/', (req, res) => {
 });
 
 // Importar e usar rotas
-// As rotas de autenticação agora são montadas em '/api'
-// para que o endpoint de login esteja disponível em POST /api/login
 app.use('/api', require('./src/routes/auth'));
 app.use('/api/processes', require('./src/routes/processes'));
 app.use('/api/tasks', require('./src/routes/tasks'));
