@@ -6,7 +6,8 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
-// ✅ Corrigido: precisa vir logo após o app ser criado
+
+// ✅ Precisa vir logo após o app ser criado para evitar erro do rate-limit
 app.set('trust proxy', 1);
 
 // Middlewares de segurança
@@ -19,7 +20,7 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100 // máximo 100 requisições por IP
+  max: 100 // máximo de 100 requisições por IP
 });
 app.use(limiter);
 
@@ -35,12 +36,12 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 10000
     });
-    
+
     console.log(`🔗 Conectado ao MongoDB: ${conn.connection.host}`);
-    
+
     // Criar usuário admin se não existir
     await createAdminUser();
-    
+
   } catch (error) {
     console.error('❌ Erro ao conectar MongoDB:', error.message);
     process.exit(1);
@@ -52,12 +53,12 @@ const createAdminUser = async () => {
   try {
     const User = require('./src/models/User');
     const bcrypt = require('bcryptjs');
-    
+
     const adminExists = await User.findOne({ username: 'admin' });
-    
+
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('Lima12345', 12);
-      
+
       const admin = new User({
         username: 'admin',
         password: hashedPassword,
@@ -65,7 +66,7 @@ const createAdminUser = async () => {
         name: 'Administrador',
         email: 'admin@processflow.com'
       });
-      
+
       await admin.save();
       console.log('✅ Usuário admin criado com sucesso');
     } else {
@@ -78,7 +79,7 @@ const createAdminUser = async () => {
 
 // Rota principal
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'ProcessFlow backend em execução',
     version: '1.0.0',
     status: 'online',
@@ -86,8 +87,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Importar e usar rotas
-// ✅ Rotas organizadas
+// Rotas da API
 app.use('/api', require('./src/routes/auth'));
 app.use('/api/processes', require('./src/routes/processes'));
 app.use('/api/tasks', require('./src/routes/tasks'));
@@ -97,7 +97,7 @@ app.use('/api/teams', require('./src/routes/teams'));
 // Middleware global de erro
 app.use((err, req, res, next) => {
   console.error('❌ Erro:', err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Erro interno do servidor',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Algo deu errado'
   });
@@ -113,7 +113,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
-  
+
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
@@ -123,4 +123,3 @@ const startServer = async () => {
 startServer();
 
 module.exports = app;
-
