@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
-// Trust the first proxy to get real client IP (needed for rate limiting)
+// Trust proxy to read X-Forwarded headers (required for rate limiting)
 app.set('trust proxy', 1);
 
 // Middlewares de segurança
