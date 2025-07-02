@@ -34,7 +34,7 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 10000
     });
-    
+
     console.log(`🔗 Conectado ao MongoDB: ${conn.connection.host}`);
     
     // Criar usuário admin se não existir
@@ -51,12 +51,12 @@ const createAdminUser = async () => {
   try {
     const User = require('./src/models/User');
     const bcrypt = require('bcryptjs');
-    
+
     const adminExists = await User.findOne({ username: 'admin' });
-    
+
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('Lima12345', 12);
-      
+
       const admin = new User({
         username: 'admin',
         password: hashedPassword,
@@ -64,7 +64,7 @@ const createAdminUser = async () => {
         name: 'Administrador',
         email: 'admin@processflow.com'
       });
-      
+
       await admin.save();
       console.log('✅ Usuário admin criado com sucesso');
     } else {
@@ -75,7 +75,7 @@ const createAdminUser = async () => {
   }
 };
 
-// Rotas
+// Rota principal de verificação
 app.get('/', (req, res) => {
   res.json({ 
     message: 'ProcessFlow backend em execução',
@@ -85,9 +85,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Importar e usar rotas
-// As rotas de autenticação agora são montadas em '/api'
-// para que o endpoint de login esteja disponível em POST /api/login
+// ✅ ROTAS IMPORTADAS — corrigido!
 app.use('/api', require('./src/routes/auth'));
 app.use('/api/processes', require('./src/routes/processes'));
 app.use('/api/tasks', require('./src/routes/tasks'));
@@ -113,7 +111,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
-  
+
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
@@ -123,4 +121,3 @@ const startServer = async () => {
 startServer();
 
 module.exports = app;
-
