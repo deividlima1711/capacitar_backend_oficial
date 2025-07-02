@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Middlewares de segurança
 app.use(helmet());
@@ -85,7 +86,7 @@ app.get('/', (req, res) => {
 });
 
 // Importar e usar rotas
-app.use('/auth', require('./src/routes/auth'));
+app.use('/api', require('./src/routes/auth'));
 app.use('/api/processes', require('./src/routes/processes'));
 app.use('/api/tasks', require('./src/routes/tasks'));
 app.use('/api/users', require('./src/routes/users'));
