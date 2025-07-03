@@ -70,6 +70,38 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Cadastro de novo usuário
+router.post('/register', async (req, res) => {
+  try {
+    const { username, password, email } = req.body;
+
+    // Validação básica
+    if (!username || !password || !email) {
+      return res.status(400).json({ error: 'Usuário, senha e e-mail são obrigatórios' });
+    }
+
+    // Verificar se usuário ou e-mail já existem
+    const existingUser = await User.findOne({ $or: [ { username: username.toLowerCase() }, { email: email.toLowerCase() } ] });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Usuário ou e-mail já cadastrado' });
+    }
+
+    // Criar novo usuário
+    const user = new User({
+      username: username.toLowerCase(),
+      password,
+      email: email.toLowerCase(),
+      name: username // ou ajuste conforme necessário
+    });
+    await user.save();
+
+    res.status(201).json({ message: 'Usuário criado com sucesso' });
+  } catch (error) {
+    console.error('Erro no cadastro:', error.message);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 // Verificar token
 router.get('/verify', auth, async (req, res) => {
   try {
